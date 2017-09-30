@@ -55,4 +55,29 @@ class DownloaderTest {
                 Image(5)
         )))
     }
+
+    @Test
+    fun sequentialDownload_IsInstant() {
+        val testScheduler = TestScheduler()
+        imageDownloader = ImageDownloader(DelayedRepository(testScheduler), testScheduler)
+
+        val actualList = mutableListOf<Image>()
+
+        imageDownloader.downloadImagesSequentially()
+                .subscribe { list -> actualList.addAll(list) }
+
+        // 24 seconds should pass without any success.
+        testScheduler.advanceTimeBy(24, TimeUnit.SECONDS)
+        assertTrue(actualList.isEmpty())
+
+        // The stream will emit on the 25th second.
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        assertTrue(actualList.containsAll(setOf(
+                Image(1),
+                Image(2),
+                Image(3),
+                Image(4),
+                Image(5)
+        )))
+    }
 }

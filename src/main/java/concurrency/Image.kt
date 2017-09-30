@@ -21,6 +21,13 @@ class ImageDownloader(private val imageRepository: ImageRepository,
                     .subscribeOn(ioScheduler)
                     .toObservable() }
             .toList()
+
+    fun downloadImagesSequentially() : Single<List<Image>> = Observable.fromArray(1, 2, 3, 4, 5)
+            .concatMap { imageRepository.downloadImageById(it)
+                    .subscribeOn(ioScheduler)
+                    .toObservable() }
+            .toList()
+
 }
 
 class DelayedRepository(private val delayScheduler: Scheduler = Schedulers.computation()) : ImageRepository {
