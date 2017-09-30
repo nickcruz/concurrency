@@ -1,5 +1,3 @@
-@file:Suppress("INTERFACE_STATIC_METHOD_CALL_FROM_JAVA6_TARGET")
-
 package concurrency
 
 import io.reactivex.Observable
