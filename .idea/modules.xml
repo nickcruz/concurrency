@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/concurrency.iml" filepath="$PROJECT_DIR$/concurrency.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/concurrency_main.iml" filepath="$PROJECT_DIR$/.idea/modules/concurrency_main.iml" group="concurrency" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/concurrency_test.iml" filepath="$PROJECT_DIR$/.idea/modules/concurrency_test.iml" group="concurrency" />
+    </modules>
+  </component>
+</project>
