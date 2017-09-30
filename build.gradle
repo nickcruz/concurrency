@@ -2,8 +2,7 @@ group 'me.nickcruz.concurrency'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.1.4'
-
+    ext.kotlin_version = '1.1.51'
     repositories {
         mavenCentral()
     }
@@ -22,13 +21,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-}
+    compile 'io.reactivex.rxjava2:rxjava:2.1.1'
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    testCompile "org.mockito:mockito-core:1.10.19"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
