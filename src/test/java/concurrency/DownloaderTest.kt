@@ -1,5 +1,8 @@
 package concurrency
 
+import io.reactivex.Scheduler
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -11,14 +14,17 @@ import kotlin.system.measureTimeMillis
  */
 class DownloaderTest {
 
-    lateinit var imageDownloader : ImageDownloader
+    inner class DelayedRepository(private val delayScheduler: Scheduler = Schedulers.computation()) : ImageRepository {
+        override fun downloadImageById(imageId: Int): Single<Image> =
+                Single
+                        .just(Image(imageId))
+                        .delay(5, TimeUnit.SECONDS, delayScheduler)
+    }
 
     @Test
     fun concurrentDownload_Takes5Seconds() {
-        imageDownloader = ImageDownloader(DelayedRepository())
-
         val totalTime = measureTimeMillis {
-            val actualList = imageDownloader.downloadImages().blockingGet()
+            val actualList = downloadImages(DelayedRepository()).blockingGet()
 
             assertTrue(actualList.containsAll(setOf(
                     Image(1),
@@ -34,11 +40,10 @@ class DownloaderTest {
     @Test
     fun concurrentDownload_IsInstant() {
         val testScheduler = TestScheduler()
-        imageDownloader = ImageDownloader(DelayedRepository(testScheduler), testScheduler)
 
         val actualList = mutableListOf<Image>()
 
-        imageDownloader.downloadImages()
+        downloadImages(DelayedRepository(testScheduler), testScheduler)
                 .subscribe { list -> actualList.addAll(list)}
 
         // After 4 seconds, we can assert that our list is still empty.
@@ -59,11 +64,10 @@ class DownloaderTest {
     @Test
     fun sequentialDownload_IsInstant() {
         val testScheduler = TestScheduler()
-        imageDownloader = ImageDownloader(DelayedRepository(testScheduler), testScheduler)
 
         val actualList = mutableListOf<Image>()
 
-        imageDownloader.downloadImagesSequentially()
+        downloadImagesSequentially(DelayedRepository(testScheduler), testScheduler)
                 .subscribe { list -> actualList.addAll(list) }
 
         // 24 seconds should pass without any success.

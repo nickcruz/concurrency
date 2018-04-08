@@ -12,25 +12,26 @@ interface ImageRepository {
     fun downloadImageById(imageId: Int): Single<Image>
 }
 
-class ImageDownloader(private val imageRepository: ImageRepository,
-                      private val ioScheduler: Scheduler = Schedulers.io()) {
-    fun downloadImages() : Single<List<Image>> = Observable.fromArray(1, 2, 3, 4, 5)
-            .flatMap { imageRepository.downloadImageById(it)
-                    .subscribeOn(ioScheduler)
-                    .toObservable() }
-            .toList()
+fun downloadImages(
+        imageRepository: ImageRepository,
+        ioScheduler: Scheduler = Schedulers.io()
+) : Single<List<Image>> =
+        Observable
+                .fromArray(1, 2, 3, 4, 5)
+                .flatMap { imageRepository.downloadImageById(it)
+                        .subscribeOn(ioScheduler)
+                        .toObservable() }
+                .toList()
 
-    fun downloadImagesSequentially() : Single<List<Image>> = Observable.fromArray(1, 2, 3, 4, 5)
-            .concatMap { imageRepository.downloadImageById(it)
-                    .subscribeOn(ioScheduler)
-                    .toObservable() }
-            .toList()
-
-}
-
-class DelayedRepository(private val delayScheduler: Scheduler = Schedulers.computation()) : ImageRepository {
-    override fun downloadImageById(imageId: Int): Single<Image> {
-        return Single.just(Image(imageId))
-                .delay(5, TimeUnit.SECONDS, delayScheduler)
-    }
-}
+fun downloadImagesSequentially(
+        imageRepository: ImageRepository,
+        ioScheduler: Scheduler = Schedulers.io()
+) : Single<List<Image>> =
+        Observable
+                .fromArray(1, 2, 3, 4, 5)
+                .concatMap { imageRepository
+                        .downloadImageById(it)
+                        .subscribeOn(ioScheduler)
+                        .toObservable()
+                }
+                .toList()
