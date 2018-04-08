@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
 class DownloaderTest {
 
     inner class DelayedRepository(private val delayScheduler: Scheduler = Schedulers.computation()) : ImageRepository {
-        override fun downloadImageById(imageId: Int): Single<Image> =
+        override fun downloadById(imageId: Int): Single<Image> =
                 Single
                         .just(Image(imageId))
                         .delay(5, TimeUnit.SECONDS, delayScheduler)
