@@ -20,6 +20,9 @@ fun downloadImages(
                 .subscribeOn(scheduler)
                 .flatMap { repo
                         .downloadById(it)
+                        .doOnSuccess {
+                            println(Thread.currentThread().name)
+                        }
                         .toObservable()
                 }
                 .toList()
@@ -33,6 +36,9 @@ fun downloadImagesSequentially(
                 .subscribeOn(scheduler)
                 .concatMap { repo
                         .downloadById(it)
+                        .doOnSuccess {
+                            println(Thread.currentThread().name)
+                        }
                         .toObservable()
                 }
                 .toList()

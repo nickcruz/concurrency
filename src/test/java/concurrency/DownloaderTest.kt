@@ -14,13 +14,6 @@ import kotlin.system.measureTimeMillis
  */
 class DownloaderTest {
 
-    inner class DelayedRepository(private val delayScheduler: Scheduler = Schedulers.computation()) : ImageRepository {
-        override fun downloadById(imageId: Int): Single<Image> =
-                Single
-                        .just(Image(imageId))
-                        .delay(5, TimeUnit.SECONDS, delayScheduler)
-    }
-
     @Test
     fun concurrentDownload_Takes5Seconds() {
         val totalTime = measureTimeMillis {
@@ -35,6 +28,22 @@ class DownloaderTest {
             )))
         }
         assertTrue(totalTime < 6000)
+    }
+
+    @Test
+    fun sequentialDownload_Takes25Seconds() {
+        val totalTime = measureTimeMillis {
+            val actualList = downloadImagesSequentially(DelayedRepository()).blockingGet()
+
+            assertTrue(actualList.containsAll(setOf(
+                    Image(1),
+                    Image(2),
+                    Image(3),
+                    Image(4),
+                    Image(5)
+            )))
+        }
+        assertTrue(totalTime < 26000)
     }
 
     @Test
@@ -83,5 +92,14 @@ class DownloaderTest {
                 Image(4),
                 Image(5)
         )))
+    }
+
+    inner class DelayedRepository(
+            private val delayScheduler: Scheduler = Schedulers.computation()
+    ) : ImageRepository {
+        override fun downloadById(imageId: Int): Single<Image> =
+                Single
+                        .just(Image(imageId))
+                        .delay(5, TimeUnit.SECONDS, delayScheduler)
     }
 }
