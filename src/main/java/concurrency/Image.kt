@@ -17,9 +17,11 @@ fun downloadImages(
 ) : Single<List<Image>> =
         Observable
                 .fromArray(1, 2, 3, 4, 5)
-                .flatMap { repo.downloadById(it)
-                        .subscribeOn(scheduler)
-                        .toObservable() }
+                .subscribeOn(scheduler)
+                .flatMap { repo
+                        .downloadById(it)
+                        .toObservable()
+                }
                 .toList()
 
 fun downloadImagesSequentially(
@@ -28,9 +30,9 @@ fun downloadImagesSequentially(
 ) : Single<List<Image>> =
         Observable
                 .fromArray(1, 2, 3, 4, 5)
+                .subscribeOn(scheduler)
                 .concatMap { repo
                         .downloadById(it)
-                        .subscribeOn(scheduler)
                         .toObservable()
                 }
                 .toList()
